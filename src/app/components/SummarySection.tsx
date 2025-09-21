@@ -27,15 +27,23 @@ function SummaryCard() {
                     <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm text-gray-600">
                         <li className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                            Modern React Architectures
+                            React, Next.js & Angular Applications
                         </li>
                         <li className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                            Performance Optimization
+                            Scalable Component Architectures
                         </li>
                         <li className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                            Responsive & Interactive UIs
+                            Responsive & Accessible Design
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                            Performance Optimization for Large UIs
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                            Integration with Cloud & APIs
                         </li>
                     </ul>
                 </div>
@@ -52,20 +60,26 @@ function SummaryCard() {
                     <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm text-gray-600">
                         <li className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
-                            API Design & Development
+                            Enterprise APIs in C# .NET & Node.js
                         </li>
                         <li className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
-                            Database Architecture
+                            Microservices & Event-driven Systems
                         </li>
                         <li className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
-                            Real-time Systems
+                            SQL Server & NoSQL Data Modeling
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
+                            High-performance ETL & Data Pipelines
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
+                           Real-time Transaction Processing
                         </li>
                     </ul>
                 </div>
-
-                {/* DevOps Layer */}
                 <div
                     className={`p-4 md:p-6 rounded-lg transition-colors border-2 ${
                         selectedStack === 'devops' ? 'bg-teal-50 border-teal-200' : 'bg-gray-50 hover:bg-gray-100 border-transparent'
@@ -77,15 +91,19 @@ function SummaryCard() {
                     <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm text-gray-600">
                         <li className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-teal-500 rounded-full" />
-                            AWS Infrastructure
+                            Azure & AWS Cloud Architecture
                         </li>
                         <li className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-teal-500 rounded-full" />
-                            CI/CD Pipelines
+                            CI/CD Pipelines with Azure DevOps & GitHub Actions
                         </li>
                         <li className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-teal-500 rounded-full" />
-                            Scalable Architecture
+                            Docker & Kubernetes Orchestration
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-teal-500 rounded-full" />
+                            Monitoring & Reliability Engineering
                         </li>
                     </ul>
                 </div>
@@ -97,37 +115,36 @@ function SummaryCard() {
 // The main Server Component, now without 'use client' or state
 export default function SummarySection() {
     return (
-        <section className="min-h-screen relative overflow-hidden py-24 md:py-0">
+        <section id="summary" className="min-h-screen relative overflow-hidden py-24 md:py-0">
+             
             <div className="absolute inset-0">
                 <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
             </div>
 
             <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 pt-8 md:pt-0">
+
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 md:mb-12">
-                    <div className="space-y-3 md:space-y-4 mb-6 md:mb-8">
-                        <h1 className="text-4xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600">
-                            David Miller
+                    <div className="space-y-3 w-7xl md:space-y-4 mb-6 md:mb-8">
+                        <h1 className="text-2xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600">
+                            Sujeet Hiremath
                         </h1>
-                        <h2 className="text-2xl md:text-4xl font-bold text-gray-900">Full Stack Developer</h2>
-                        <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-                            I craft end-to-end solutions with 8+ years of experience building scalable applications and leading development teams.
+                        <h3 className="text-xl md:text-3xl font-bold text-gray-900">Engineer. Architect. Mentor. Innovator. Building the systems, cultures, and ideas that power the next generation of technology.</h3>
+                        <p className="text-xl md:text-xl text-gray-600">
+                          I have architected and led the development of enterprise-scale platforms serving thousands of users nation wide. My work spans large-scale cloud transformations, high-performance system architectures, and DevOps innovations that cut costs, increase reliability, and accelerate delivery across industries.
                         </p>
-                        <p className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto">
-                            Previously Senior Full Stack Developer at <span className="text-blue-600">Stripe</span> and Tech Lead at{' '}
-                            <span className="text-purple-600">Vercel</span>
+                        <p className="text-base md:text-lg text-gray-500">
+                          Alongside my engineering work, I publish insights on software design, DevOps strategies, and cloud-native architectures, helping engineering teams worldwide build smarter, more resilient applications.
                         </p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-6 md:mb-8">
-                        <span className="px-3 md:px-4 py-1.5 md:py-2 bg-blue-100 rounded-full text-blue-600 text-xs md:text-sm">TypeScript</span>
-                        <span className="px-3 md:px-4 py-1.5 md:py-2 bg-purple-100 rounded-full text-purple-600 text-xs md:text-sm">React & Next.js</span>
-                        <span className="px-3 md:px-4 py-1.5 md:py-2 bg-teal-100 rounded-full text-teal-600 text-xs md:text-sm">Node.js</span>
-                        <span className="px-3 md:px-4 py-1.5 md:py-2 bg-blue-100 rounded-full text-blue-600 text-xs md:text-sm">Python</span>
-                        <span className="px-3 md:px-4 py-1.5 md:py-2 bg-purple-100 rounded-full text-purple-600 text-xs md:text-sm">AWS</span>
+                        <span className="px-3 md:px-4 py-1.5 md:py-2 bg-blue-100 rounded-full text-blue-600 text-xs md:text-sm">Cloud-Native Architectures</span>
+                        <span className="px-3 md:px-4 py-1.5 md:py-2 bg-purple-100 rounded-full text-purple-600 text-xs md:text-sm">Large-Scale Data Systems</span>
+                        <span className="px-3 md:px-4 py-1.5 md:py-2 bg-teal-100 rounded-full text-teal-600 text-xs md:text-sm">Enterprise Application Design</span>
+                        <span className="px-3 md:px-4 py-1.5 md:py-2 bg-blue-100 rounded-full text-blue-600 text-xs md:text-sm">DevOps & CI/CD Automation</span>
+                        <span className="px-3 md:px-4 py-1.5 md:py-2 bg-purple-100 rounded-full text-purple-600 text-xs md:text-sm">Mentorship & Technical Leadership</span>
                     </div>
                 </motion.div>
-
-                {/* Interactive System Architecture */}
-                <div className="w-full max-w-5xl mx-auto relative px-2 md:px-4">
+                <div className="w-full max-w-7xl mx-auto relative px-2 md:px-4">
                     <SummaryCard />
                 </div>
             </div>
