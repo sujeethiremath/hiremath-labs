@@ -20,6 +20,7 @@ export default function ContactSection() {
   const [status, setStatus] = useState("");
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   // Use the FormErrors type here to avoid the TypeScript error.
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -112,11 +113,12 @@ export default function ContactSection() {
       <div className="max-w-4xl mx-auto text-center">
         <div className="space-y-8">
           <h2 className="text-3xl font-bold text-gray-900">
-            Let&apos;s Build Something Amazing
+            Not all heroes wear capes… <br /> Some write code!
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Looking for a full-stack developer who can architect and implement
-            complete solutions? Let&apos;s discuss your project.
+            Think of me as the &apos;Superman&apos; of code, architecting and
+            implementing full-stack solutions that keep your product flying
+            high.
           </p>
 
           {/* Location */}
@@ -155,9 +157,8 @@ export default function ContactSection() {
               </svg>
               Get in Touch
             </button>
-            <a
-              href="/resume.pdf"
-              target="_blank"
+            <button
+              onClick={() => setIsResumeModalOpen(true)}
               className="px-8 py-3 bg-gray-100 border border-gray-200 text-gray-900 rounded-lg font-medium hover:bg-gray-200 transition-colors inline-flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -173,13 +174,13 @@ export default function ContactSection() {
                 />
               </svg>
               View Resume
-            </a>
+            </button>
           </div>
 
           {/* Social Links */}
           <div className="flex justify-center gap-6">
             <a
-              href="https://github.com"
+              href="https://github.com/sujeethiremath"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-600 hover:text-gray-900 transition-colors p-2 hover:bg-gray-100 rounded-lg"
@@ -189,7 +190,7 @@ export default function ContactSection() {
               </svg>
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/sujeethiremath/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-600 hover:text-gray-900 transition-colors p-2 hover:bg-gray-100 rounded-lg"
@@ -211,7 +212,6 @@ export default function ContactSection() {
           </div>
         </div>
       </div>
-
       {/* The entire modal is now conditionally rendered */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300">
@@ -343,8 +343,8 @@ export default function ContactSection() {
             </h3>
             <p className="text-gray-600 mb-6">
               Thanks so much for reaching out! I already got your previous
-              message and I'm on it. You'll be able to send me another one after
-              24 hours.
+              message and I&apos;m on it. You&apos;ll be able to send me another
+              one after 24 hours.
             </p>
             <button
               onClick={() => setIsRateLimited(false)}
@@ -355,7 +355,6 @@ export default function ContactSection() {
           </div>
         </div>
       )}
-
       {/* New custom dialog for successful submissions */}
       {isSuccess && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center transition-opacity duration-300">
@@ -375,6 +374,87 @@ export default function ContactSection() {
             >
               Awesome!
             </button>
+          </div>
+        </div>
+      )}
+
+      {isResumeModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center transition-opacity duration-300">
+          <div
+            className="absolute inset-0 bg-black bg-opacity-75 backdrop-blur-sm"
+            onClick={() => setIsResumeModalOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-[95%] mx-4 p-8 text-center animate-pop-in">
+            <button
+              onClick={() => setIsResumeModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+              aria-label="Close modal"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              Resume Options
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Choose an option to interact with the resume.
+            </p>
+            <div className="flex flex-col gap-4">
+              <a
+                href="resume/Resume_Sujeet_H.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsResumeModalOpen(false)}
+                className="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-transform duration-200 transform hover:scale-105 inline-flex items-center justify-center gap-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 2a1 1 0 00-1 1v7a1 1 0 001 1h8a1 1 0 001-1V7a1 1 0 00-1-1H6z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                View Resume
+              </a>
+              <a
+                href="resume/Resume_Sujeet_H.pdf"
+                download="Sujeet_H_Resume.pdf"
+                onClick={() => setIsResumeModalOpen(false)}
+                className="w-full px-6 py-3 bg-gray-100 text-gray-900 font-semibold rounded-full shadow-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 transition-transform duration-200 transform hover:scale-105 inline-flex items-center justify-center gap-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 9.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 8.414V14a1 1 0 11-2 0V8.414L6.707 9.707a1 1 0 01-1.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Download Resume
+              </a>
+            </div>
           </div>
         </div>
       )}
