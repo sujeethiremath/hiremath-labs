@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../lib/firebase";
+import { motion } from "framer-motion";
 
 export default function WriteArticlePage() {
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -89,7 +90,7 @@ export default function WriteArticlePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-lg">Loading...</p>
+        <p className="text-gray-400 text-lg">Loading...</p>
       </div>
     );
   }
@@ -99,106 +100,115 @@ export default function WriteArticlePage() {
   }
 
   return (
-    <div className="container mx-auto p-4 mt-20 max-w-2xl">
-      <h1 className="text-4xl font-extrabold text-center mb-8 text-gray-800">
-        Write Article
-      </h1>
-      <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label
-              htmlFor="title"
-              className="block text-sm font-medium text-gray-700"
+    <div className="container mx-auto p-4 pt-20 max-w-2xl">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+          Write an Article
+        </h1>
+        <div className="relative bg-gray-800/80 backdrop-blur-md rounded-2xl p-8 md:p-10 shadow-2xl border border-white/10 text-white">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-gray-400 mb-1"
+              >
+                Article Title
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                required
+                className="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="content"
+                className="block text-sm font-medium text-gray-400 mb-1"
+              >
+                Article Content
+              </label>
+              <textarea
+                id="content"
+                name="content"
+                value={formData.content}
+                onChange={handleChange}
+                rows={10}
+                required
+                className="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors resize-y"
+              ></textarea>
+            </div>
+            <div>
+              <label
+                htmlFor="seoTitle"
+                className="block text-sm font-medium text-gray-400 mb-1"
+              >
+                SEO Title (Optional)
+              </label>
+              <input
+                type="text"
+                id="seoTitle"
+                name="seoTitle"
+                value={formData.seoTitle}
+                onChange={handleChange}
+                className="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="seoDescription"
+                className="block text-sm font-medium text-gray-400 mb-1"
+              >
+                SEO Description (Optional)
+              </label>
+              <textarea
+                id="seoDescription"
+                name="seoDescription"
+                value={formData.seoDescription}
+                onChange={handleChange}
+                rows={3}
+                className="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors resize-y"
+              ></textarea>
+            </div>
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={handleClose}
+                className="py-3 px-6 bg-gray-700/50 border border-gray-600 text-gray-200 rounded-full font-semibold hover:bg-gray-700 transition-all duration-300 transform hover:scale-105"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="py-3 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105"
+              >
+                Submit Article
+              </button>
+            </div>
+          </form>
+          {message && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className={`mt-6 p-4 rounded-lg text-center font-medium ${
+                message.startsWith("Error")
+                  ? "bg-red-900/40 text-red-300 border border-red-800"
+                  : "bg-green-900/40 text-green-300 border border-green-800"
+              }`}
             >
-              Article Title
-            </label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 p-2 border"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="content"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Article Content
-            </label>
-            <textarea
-              id="content"
-              name="content"
-              value={formData.content}
-              onChange={handleChange}
-              rows={10}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 p-2 border resize-y"
-            ></textarea>
-          </div>
-          <div>
-            <label
-              htmlFor="seoTitle"
-              className="block text-sm font-medium text-gray-700"
-            >
-              SEO Title (Optional)
-            </label>
-            <input
-              type="text"
-              id="seoTitle"
-              name="seoTitle"
-              value={formData.seoTitle}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 p-2 border"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="seoDescription"
-              className="block text-sm font-medium text-gray-700"
-            >
-              SEO Description (Optional)
-            </label>
-            <textarea
-              id="seoDescription"
-              name="seoDescription"
-              value={formData.seoDescription}
-              onChange={handleChange}
-              rows={3}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 p-2 border resize-y"
-            ></textarea>
-          </div>
-          <div className="flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="py-3 px-6 bg-gray-500 text-white font-medium rounded-md shadow-lg hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="py-3 px-6 bg-blue-600 text-white font-medium rounded-md shadow-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-            >
-              Submit Article
-            </button>
-          </div>
-        </form>
-        {message && (
-          <div
-            className={`mt-4 p-3 text-center rounded-md ${
-              message.startsWith("Error")
-                ? "bg-red-100 text-red-700"
-                : "bg-green-100 text-green-700"
-            }`}
-          >
-            {message}
-          </div>
-        )}
-      </div>
+              {message}
+            </motion.div>
+          )}
+        </div>
+      </motion.div>
     </div>
   );
 }

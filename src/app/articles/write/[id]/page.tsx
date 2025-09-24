@@ -6,6 +6,7 @@ import { getFirestore, doc, getDoc, Timestamp } from "firebase/firestore";
 import { app } from "../../../lib/firebase";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import { motion } from "framer-motion";
 
 // Interface for the article data
 interface Article {
@@ -24,7 +25,7 @@ export default function WriteArticlePage() {
   const params = useParams();
   const articleId = params.id as string;
 
-  const [user, setUser] = useState<User | null>(null); // Correctly typed to accept a User object or null
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState<Article>({
     title: "",
@@ -40,31 +41,28 @@ export default function WriteArticlePage() {
     const auth = getAuth(app);
     const db = getFirestore(app);
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
-      setUser(authUser);
-      setLoading(false);
-
       if (!authUser) {
         // Redirect if no user is authenticated
         router.push("/");
-        return;
-      }
-
-      if (articleId && articleId !== "new") {
-        // Fetch article data if an ID exists
-        try {
-          const docRef = doc(db, "articles", articleId);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            setFormData(docSnap.data() as Article);
-          } else {
-            //console.error(`No such document with ID: ${articleId}`);
-            router.push("/articles/write/new"); // Redirect to new article page if not found
+      } else {
+        setUser(authUser);
+        if (articleId && articleId !== "new") {
+          // Fetch article data if an ID exists
+          try {
+            const docRef = doc(db, "articles", articleId);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+              setFormData(docSnap.data() as Article);
+            } else {
+              router.push("/articles/write/new");
+            }
+          } catch (error) {
+            console.error("Error fetching document:", error);
+            router.push("/articles/write/new");
           }
-        } catch (error) {
-          console.error("Error fetching document:", error);
-          router.push("/articles/write/new"); // Redirect on any other error
         }
       }
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -121,93 +119,125 @@ export default function WriteArticlePage() {
     return formData.content || "";
   }, [formData.content]);
 
+  // Handle loading state
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500 text-lg">Loading...</p>
+      <div className="flex items-center justify-center min-h-screen text-gray-400">
+        <p className="text-lg">Loading...</p>
       </div>
     );
   }
 
+  // Handle unauthorized state (this is now safe because we've waited for loading to finish)
+  if (!user) {
+    // This is a safety check, but the redirect in useEffect should handle this
+    return null;
+  }
+
   return (
-    <main className="bg-gray-50 min-h-screen py-20 px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-8 text-center">
-          {articleId === "new" ? "Write New Article" : "Edit Article"}
-        </h1>
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white rounded-2xl shadow-lg p-8 space-y-6"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <div className="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0">
-            <div className="flex-1 space-y-4">
-              <input
-                type="text"
-                name="title"
-                placeholder="Article Title"
-                value={formData.title}
-                onChange={handleChange}
-                className="w-full text-2xl font-bold border-b-2 border-gray-300 focus:border-blue-500 outline-none p-2 transition-colors duration-200"
-                required
-              />
-              <textarea
-                name="content"
-                placeholder="Write your content here... (Markdown supported)"
-                rows={15}
-                value={formData.content}
-                onChange={handleChange}
-                className="w-full border-2 border-gray-300 rounded-lg focus:border-blue-500 outline-none p-4 transition-colors duration-200 resize-none"
-                required
-              />
-              <div className="space-y-2">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+            {articleId === "new" ? "Write New Article" : "Edit Article"}
+          </h1>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0">
+              {/* Main Form Section */}
+              <div className="relative flex-1 bg-gray-800/80 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10 text-white space-y-6">
                 <input
                   type="text"
-                  name="seoTitle"
-                  placeholder="SEO Title (optional)"
-                  value={formData.seoTitle}
+                  name="title"
+                  placeholder="Article Title"
+                  value={formData.title}
                   onChange={handleChange}
-                  className="w-full border-2 border-gray-300 rounded-lg focus:border-blue-500 outline-none p-3 transition-colors duration-200"
+                  className="w-full text-2xl font-bold bg-transparent border-b-2 border-gray-600 focus:border-blue-500 outline-none p-2 transition-colors duration-200 placeholder-gray-400"
+                  required
                 />
-                <input
-                  type="text"
-                  name="seoDescription"
-                  placeholder="SEO Description (optional)"
-                  value={formData.seoDescription}
+                <textarea
+                  name="content"
+                  placeholder="Write your content here... (Markdown supported)"
+                  rows={15}
+                  value={formData.content}
                   onChange={handleChange}
-                  className="w-full border-2 border-gray-300 rounded-lg focus:border-blue-500 outline-none p-3 transition-colors duration-200"
+                  className="w-full h-80 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 p-4 transition-colors duration-200 resize-none"
+                  required
                 />
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    name="seoTitle"
+                    placeholder="SEO Title (optional)"
+                    value={formData.seoTitle}
+                    onChange={handleChange}
+                    className="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors"
+                  />
+                  <input
+                    type="text"
+                    name="seoDescription"
+                    placeholder="SEO Description (optional)"
+                    value={formData.seoDescription}
+                    onChange={handleChange}
+                    className="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors"
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="isPublic"
+                    name="isPublic"
+                    checked={formData.isPublic}
+                    onChange={handleChange}
+                    className="form-checkbox h-5 w-5 bg-gray-700 border-gray-600 rounded-md text-blue-600 focus:ring-blue-500"
+                  />
+                  <label htmlFor="isPublic" className="text-gray-400">
+                    Publish to public page
+                  </label>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="isPublic"
-                  name="isPublic"
-                  checked={formData.isPublic}
-                  onChange={handleChange}
-                  className="form-checkbox h-5 w-5 text-blue-600 rounded-md"
-                />
-                <label htmlFor="isPublic" className="text-gray-700">
-                  Publish to public page
-                </label>
+
+              {/* Live Preview Section */}
+              <div className="relative flex-1 bg-gray-800/80 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10 text-white overflow-y-auto">
+                <h2 className="text-2xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+                  Preview
+                </h2>
+                <div className="prose prose-invert max-w-none text-gray-200">
+                  <Markdown rehypePlugins={[rehypeRaw]}>
+                    {renderedContent}
+                  </Markdown>
+                </div>
               </div>
             </div>
-            <div className="flex-1 rounded-lg border-2 border-gray-300 bg-gray-100 p-4 overflow-y-auto">
-              <h2 className="text-2xl font-bold mb-4">Preview</h2>
-              <div className="prose max-w-none">
-                <Markdown rehypePlugins={[rehypeRaw]}>
-                  {renderedContent}
-                </Markdown>
-              </div>
+
+            {/* Submit Button and Status Message */}
+            <div className="flex flex-col items-center space-y-4">
+              <button
+                type="submit"
+                className="w-full max-w-md py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105"
+              >
+                Save Article
+              </button>
+              {status && (
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={`text-center font-medium mt-4 p-3 rounded-lg ${
+                    status.startsWith("Error")
+                      ? "bg-red-900/40 text-red-300 border border-red-800"
+                      : "bg-green-900/40 text-green-300 border border-green-800"
+                  }`}
+                >
+                  {status}
+                </motion.p>
+              )}
             </div>
-          </div>
-          <button
-            type="submit"
-            className="w-full py-3 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-colors duration-200"
-          >
-            Save Article
-          </button>
-          {status && <p className="text-center text-gray-600 mt-4">{status}</p>}
-        </form>
+          </form>
+        </motion.div>
       </div>
     </main>
   );
