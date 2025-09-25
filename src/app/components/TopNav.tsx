@@ -62,7 +62,7 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
         <div className="flex justify-between items-center py-4 md:py-6">
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center space-x-2">
-              <Image src="/logo.svg" alt="Logo" width={40} height={40} />
+              <Image src="/imagewin.png" alt="Logo" width={40} height={40} />
               <span className="text-xl font-bold text-white tracking-wide">
                 Hiremath Labs
               </span>

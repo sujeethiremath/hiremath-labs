@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Modal from "./Modal"; // Adjust path as needed
+import Image from "next/image"; // ✅ correct
 
 // Define a type for the errors object
 type FormErrors = {
@@ -120,13 +121,22 @@ export default function ContactSection() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-600">
-            Let's Connect
-          </h2>
-          <p className="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
-            I'm always open to discussing new opportunities, collaborations, and
-            engineering challenges. Feel free to reach out.
-          </p>
+          <div className="flex flex-col items-center justify-center text-center">
+            <Image
+              src="/imagewin.png"
+              alt="Logo"
+              width={200} // Adjust width for a more balanced look
+              height={200} // Adjust height to match the new width
+              className="mb-4" // Add bottom margin to separate the logo from the text
+            />
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-600">
+              Let's Connect
+            </h2>
+            <p className="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
+              I'm always open to discussing new opportunities, collaborations,
+              and engineering challenges. Feel free to reach out.
+            </p>
+          </div>
         </motion.div>
 
         {/* Contact Buttons */}
