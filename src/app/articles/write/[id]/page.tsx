@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { getFirestore, doc, getDoc, Timestamp } from "firebase/firestore";
@@ -7,6 +7,15 @@ import { app } from "../../../lib/firebase";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { motion } from "framer-motion";
+
+// New TipTap Imports
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import dynamic from "next/dynamic";
+
+// TipTap Extensions for a Google Docs-like experience
+import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
 
 // Interface for the article data
 interface Article {
@@ -19,6 +28,171 @@ interface Article {
   createdAt?: Timestamp;
   updatedAt?: Timestamp;
 }
+
+// A new client-only component to encapsulate TipTap
+const TipTapEditorWrapper = ({
+  content,
+  onContentChange,
+}: {
+  content: string;
+  onContentChange: (html: string) => void;
+}) => {
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Image.configure({
+        inline: true,
+        allowBase64: true, // Allows pasting images directly, but you should handle uploads for production
+      }),
+      Link.configure({
+        openOnClick: false, // Ensures links are editable in the editor
+        autolink: true,
+      }),
+    ],
+    content: content,
+    onUpdate: ({ editor }) => {
+      onContentChange(editor.getHTML());
+    },
+    immediatelyRender: false,
+    editorProps: {
+      attributes: {
+        class:
+          "prose dark:prose-invert min-h-[300px] max-w-none focus:outline-none p-4",
+      },
+    },
+  });
+
+  // Effect to set editor content when it loads from Firestore
+  useEffect(() => {
+    if (editor && editor.isEmpty) {
+      editor.commands.setContent(content || "");
+    }
+  }, [content, editor]);
+
+  // Handle a new image insertion
+  const addImage = useCallback(() => {
+    const url = window.prompt("URL");
+
+    if (url) {
+      editor?.chain().focus().setImage({ src: url }).run();
+    }
+  }, [editor]);
+
+  const setLink = useCallback(() => {
+    if (!editor) return;
+    const previousUrl = editor.getAttributes("link").href;
+    const url = window.prompt("URL", previousUrl);
+
+    // cancelled
+    if (url === null) {
+      return;
+    }
+
+    // empty
+    if (url === "") {
+      editor.chain().focus().extendMarkRange("link").unsetLink().run();
+      return;
+    }
+
+    // update link
+    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+  }, [editor]);
+
+  // TipTap Toolbar Component
+  const TipTapToolbar = () => {
+    if (!editor) {
+      return null;
+    }
+    return (
+      <div className="bg-gray-800/80 p-2 rounded-t-lg border border-gray-600 border-b-0 flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          className={`p-2 rounded-md ${editor.isActive("bold") ? "bg-blue-600 text-white" : "hover:bg-gray-700"}`}
+        >
+          <span className="font-bold">B</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          className={`p-2 rounded-md ${editor.isActive("italic") ? "bg-blue-600 text-white" : "hover:bg-gray-700"}`}
+        >
+          <span className="italic">I</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          className={`p-2 rounded-md ${editor.isActive("blockquote") ? "bg-blue-600 text-white" : "hover:bg-gray-700"}`}
+        >
+          <span className="font-mono">"</span>
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 1 }).run()
+          }
+          className={`p-2 rounded-md ${editor.isActive("heading", { level: 1 }) ? "bg-blue-600 text-white" : "hover:bg-gray-700"}`}
+        >
+          <span className="font-bold text-xl">H1</span>
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
+          className={`p-2 rounded-md ${editor.isActive("heading", { level: 2 }) ? "bg-blue-600 text-white" : "hover:bg-gray-700"}`}
+        >
+          <span className="font-bold text-lg">H2</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          className={`p-2 rounded-md ${editor.isActive("bulletList") ? "bg-blue-600 text-white" : "hover:bg-gray-700"}`}
+        >
+          <span className="text-xl">•</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          className={`p-2 rounded-md ${editor.isActive("orderedList") ? "bg-blue-600 text-white" : "hover:bg-gray-700"}`}
+        >
+          <span className="text-xl">1.</span>
+        </button>
+        <button
+          type="button"
+          onClick={setLink}
+          className={`p-2 rounded-md ${editor.isActive("link") ? "bg-blue-600 text-white" : "hover:bg-gray-700"}`}
+        >
+          Link
+        </button>
+        <button
+          type="button"
+          onClick={addImage}
+          className={`p-2 rounded-md hover:bg-gray-700`}
+        >
+          Image
+        </button>
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <TipTapToolbar />
+      <EditorContent editor={editor} />
+    </>
+  );
+};
+
+// Dynamically import the wrapper component
+const TipTapEditor = dynamic(() => Promise.resolve(TipTapEditorWrapper), {
+  ssr: false,
+  loading: () => (
+    <div className="h-80 w-full bg-gray-700/50 rounded-lg flex items-center justify-center">
+      Loading editor...
+    </div>
+  ),
+});
 
 export default function WriteArticlePage() {
   const router = useRouter();
@@ -42,17 +216,16 @@ export default function WriteArticlePage() {
     const db = getFirestore(app);
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (!authUser) {
-        // Redirect if no user is authenticated
         router.push("/");
       } else {
         setUser(authUser);
         if (articleId && articleId !== "new") {
-          // Fetch article data if an ID exists
           try {
             const docRef = doc(db, "articles", articleId);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-              setFormData(docSnap.data() as Article);
+              const articleData = docSnap.data() as Article;
+              setFormData(articleData);
             } else {
               router.push("/articles/write/new");
             }
@@ -75,6 +248,10 @@ export default function WriteArticlePage() {
     const isPublic =
       type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
     setFormData((prev) => ({ ...prev, [name]: isPublic }));
+  };
+
+  const handleContentChange = (content: string) => {
+    setFormData((prev) => ({ ...prev, content }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -128,9 +305,7 @@ export default function WriteArticlePage() {
     );
   }
 
-  // Handle unauthorized state (this is now safe because we've waited for loading to finish)
   if (!user) {
-    // This is a safety check, but the redirect in useEffect should handle this
     return null;
   }
 
@@ -147,7 +322,6 @@ export default function WriteArticlePage() {
           </h1>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0">
-              {/* Main Form Section */}
               <div className="relative flex-1 bg-gray-800/80 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10 text-white space-y-6">
                 <input
                   type="text"
@@ -158,15 +332,14 @@ export default function WriteArticlePage() {
                   className="w-full text-2xl font-bold bg-transparent border-b-2 border-gray-600 focus:border-blue-500 outline-none p-2 transition-colors duration-200 placeholder-gray-400"
                   required
                 />
-                <textarea
-                  name="content"
-                  placeholder="Write your content here... (Markdown supported)"
-                  rows={15}
-                  value={formData.content}
-                  onChange={handleChange}
-                  className="w-full h-80 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 p-4 transition-colors duration-200 resize-none"
-                  required
-                />
+                <div className="w-full">
+                  <div className="bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors">
+                    <TipTapEditor
+                      content={formData.content || ""}
+                      onContentChange={handleContentChange}
+                    />
+                  </div>
+                </div>
                 <div className="space-y-4">
                   <input
                     type="text"
@@ -199,8 +372,6 @@ export default function WriteArticlePage() {
                   </label>
                 </div>
               </div>
-
-              {/* Live Preview Section */}
               <div className="relative flex-1 bg-gray-800/80 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10 text-white overflow-y-auto">
                 <h2 className="text-2xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
                   Preview
@@ -212,8 +383,6 @@ export default function WriteArticlePage() {
                 </div>
               </div>
             </div>
-
-            {/* Submit Button and Status Message */}
             <div className="flex flex-col items-center space-y-4">
               <button
                 type="submit"

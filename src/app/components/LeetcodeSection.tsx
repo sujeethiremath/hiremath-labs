@@ -232,7 +232,7 @@ export default function LeetcodeSection() {
     allQuestionsCount.reduce((sum, q) => sum + q.count, 0) || 0;
 
   return (
-    <section id="leetcode" className="py-16 px-4 bg-gray-900 text-white">
+    <section id="leetcode" className="py-4 px-4 bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-4xl md:text-5xl font-extrabold mb-12 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
           LeetCode Progress
@@ -354,9 +354,6 @@ export default function LeetcodeSection() {
             <div className="text-6xl font-extrabold text-blue-400">
               {totalSolved}
             </div>
-            <p className="mt-2 text-lg text-gray-400">
-              out of {totalQuestions}
-            </p>
           </motion.div>
         </div>
       </div>

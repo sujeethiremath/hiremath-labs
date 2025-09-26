@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@tailwindplus/elements": "^1.0.13",
+    "@tiptap/extension-image": "^3.6.1",
+    "@tiptap/react": "^3.6.1",
+    "@tiptap/starter-kit": "^3.6.1",
     "bcryptjs": "^3.0.2",
     "chart.js": "^4.5.0",
     "chartjs-plugin-datalabels": "^2.2.0",

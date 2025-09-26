@@ -26,8 +26,6 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Note: The user state is now managed in RootLayout and passed down as a prop (isAuthorized)
-  // We no longer need to check for the user here.
   const handleLogout = async () => {
     const auth = getAuth(app);
     try {
@@ -49,11 +47,24 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
     }
   };
 
+  // New handleClick function to handle both internal and external links
+  const handleClick = (
+    e: React.MouseEvent,
+    link: { name: string; id?: string; path?: string }
+  ) => {
+    if (pathname === "/" && link.id) {
+      e.preventDefault(); // Prevent default link behavior
+      handleScroll(link.id);
+    }
+    // Otherwise, let the Link component handle the navigation to another page
+  };
+
   const navLinks = [
-    { name: "Summary", id: "summary" },
-    { name: "Projects", id: "projects" },
+    { name: "Summary", id: "summary", path: "/#summary" },
+    { name: "Projects", id: "projects", path: "/#projects" },
+    { name: "Leetcode Summary", id: "leetcode", path: "/#leetcode" },
+    { name: "Contact", id: "contact", path: "/#contact" },
     { name: "Articles", path: "/articles" },
-    { name: "Contact", id: "contact" },
   ];
 
   return (
@@ -71,29 +82,20 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex flex-grow justify-center items-center space-x-8">
-            {navLinks.map((link) =>
-              "path" in link ? (
-                <Link
-                  key={link.name}
-                  href={link.path}
-                  className={`text-base font-medium transition-colors duration-200 ${
-                    pathname === link.path
-                      ? "text-blue-400"
-                      : "text-gray-400 hover:text-blue-400"
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ) : (
-                <button
-                  key={link.name}
-                  onClick={() => handleScroll(link.id)}
-                  className="text-base font-medium transition-colors duration-200 text-gray-400 hover:text-blue-400"
-                >
-                  {link.name}
-                </button>
-              )
-            )}
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.path || "#"}
+                onClick={(e) => handleClick(e, link)}
+                className={`text-base font-medium transition-colors duration-200 ${
+                  pathname === link.path
+                    ? "text-blue-400"
+                    : "text-gray-400 hover:text-blue-400"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
           </div>
 
           {/* Authentication and Mobile Menu Icon */}
@@ -174,30 +176,23 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
             className="md:hidden bg-gray-900/80 backdrop-blur-md overflow-hidden"
           >
             <div className="py-4 space-y-2">
-              {navLinks.map((link) =>
-                "path" in link ? (
-                  <Link
-                    key={link.name}
-                    href={link.path}
-                    className={`block px-5 py-2 text-base font-medium transition-colors duration-200 ${
-                      pathname === link.path
-                        ? "text-blue-400 bg-gray-800"
-                        : "text-gray-400 hover:text-blue-400 hover:bg-gray-800"
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {link.name}
-                  </Link>
-                ) : (
-                  <button
-                    key={link.name}
-                    onClick={() => handleScroll(link.id)}
-                    className="block w-full text-left px-5 py-2 text-base font-medium transition-colors duration-200 text-gray-400 hover:text-blue-400 hover:bg-gray-800"
-                  >
-                    {link.name}
-                  </button>
-                )
-              )}
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.path || "#"}
+                  className={`block px-5 py-2 text-base font-medium transition-colors duration-200 ${
+                    pathname === link.path
+                      ? "text-blue-400 bg-gray-800"
+                      : "text-gray-400 hover:text-blue-400 hover:bg-gray-800"
+                  }`}
+                  onClick={(e) => {
+                    handleClick(e, link);
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  {link.name}
+                </Link>
+              ))}
               <hr className="border-gray-700 my-2" />
               {isAuthorized ? (
                 <>
