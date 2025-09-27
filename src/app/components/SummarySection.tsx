@@ -41,19 +41,19 @@ function SummaryCard() {
             </li>
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-              Scalable Component Architectures
+              End-to-End ADA/Accessibility Compliance
             </li>
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-              Responsive & Accessible Design
+              E2E Test Automation with Cypress
             </li>
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-              Performance Optimization for Large UIs
+              User Behavior Analytics (Mixpanel Integration)
             </li>
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-              Integration with Cloud & APIs
+              Scalable, Responsive, and Performant UIs
             </li>
           </ul>
         </div>
@@ -74,23 +74,23 @@ function SummaryCard() {
           <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm text-gray-300">
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
-              Enterprise APIs in C# .NET & Node.js
+              Enterprise APIs in C# .NET & Node.js, High-Throughput Services
             </li>
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
-              Microservices & Event-driven Systems
+              Optimized Data Pipelines
             </li>
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
-              SQL Server & NoSQL Data Modeling
+              Migration for Petabyte Scalability
             </li>
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
-              High-performance ETL & Data Pipelines
+              Production ML/AI Classification Systems
             </li>
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
-              Real-time Transaction Processing
+              Apache Spark and Complex ETL/ELT Pipelining
             </li>
           </ul>
         </div>
@@ -110,19 +110,23 @@ function SummaryCard() {
           <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm text-gray-300">
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-teal-500 rounded-full" />
-              Azure & AWS Cloud Architecture
+              Container Orchestration
             </li>
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-teal-500 rounded-full" />
-              CI/CD Pipelines with Azure DevOps & GitHub Actions
+              Full Stack CI/CD (Azure DevOps, GitHub Actions)
             </li>
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-teal-500 rounded-full" />
-              Docker & Kubernetes Orchestration
+              Real-time Monitoring (Prometheus, Kibana)
             </li>
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-teal-500 rounded-full" />
-              Monitoring & Reliability Engineering
+              Automated Infrastructure Migration
+            </li>
+            <li className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-teal-500 rounded-full" />
+              Focus on SLAs and High-Availability Design
             </li>
           </ul>
         </div>
