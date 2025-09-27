@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Modal from "./Modal"; // Adjust path as needed
-import Image from "next/image"; // ✅ correct
+import Image from "next/image"; //  correct
+import { trackEvent } from "../utils/analytics"; // <-- IMPORT ADDED
 
 // Define a type for the errors object
 type FormErrors = {
@@ -39,6 +40,11 @@ export default function ContactSection() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    // 1. Track that the form input has started on the first change
+    if (Object.values(form).every((val) => val === "")) {
+      trackEvent("Contact Form Started");
+    }
+
     setForm({ ...form, [e.target.name]: e.target.value });
     if (errors[e.target.name as keyof FormErrors]) {
       setErrors({ ...errors, [e.target.name]: "" });
@@ -70,11 +76,18 @@ export default function ContactSection() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // Track attempt to submit the form
+    trackEvent("Contact Form Submitted");
+
     if (!validateForm()) {
       setStatus("Please correct the errors above.");
+      trackEvent("Contact Form Failed Validation", {
+        reason: "Missing Required Fields",
+      });
       return;
     }
 
+    const startTime = Date.now();
     setStatus("Sending...");
     try {
       const res = await fetch("/api/contact", {
@@ -82,23 +95,42 @@ export default function ContactSection() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+      const durationSeconds = ((Date.now() - startTime) / 1000).toFixed(1);
 
       if (res.status === 429) {
         setIsRateLimited(true);
         setIsContactModalOpen(false);
+        trackEvent("Message Sent Rate Limited", {
+          duration: durationSeconds,
+        });
       } else if (res.ok) {
         setIsSuccess(true);
         setIsContactModalOpen(false);
         setForm({ name: "", phone: "", email: "", message: "" });
+        trackEvent("Message Sent Success", {
+          duration: durationSeconds,
+          phone_provided: !!form.phone,
+        });
       } else {
         setStatus("Error sending message.");
+        trackEvent("Message Sent Error", {
+          duration: durationSeconds,
+          error_status: res.status,
+        });
       }
     } catch {
       setStatus("Error sending message.");
+      trackEvent("Message Sent Error", {
+        error_status: "Network Error",
+      });
     }
   };
 
   const closeAllModals = () => {
+    // Only track modal closure if a modal was open
+    if (isContactModalOpen) {
+      trackEvent("Contact Modal Closed", { source: "X Button/Overlay" });
+    }
     setIsContactModalOpen(false);
     setIsResumeModalOpen(false);
     setIsRateLimited(false);
@@ -110,6 +142,25 @@ export default function ContactSection() {
     setForm({ name: "", phone: "", email: "", message: "" });
     setErrors({});
     setStatus("");
+    // Track intent to contact
+    trackEvent("Contact Modal Opened", { source: "Contact Section Button" });
+  };
+
+  const handleResumeClick = (action: "View" | "Download") => {
+    setIsResumeModalOpen(false); // Close the modal after selection
+    trackEvent("Resume Downloaded", {
+      // Consolidated event for tracking high intent
+      action: action,
+      file_name: "Sujeet_H_Resume.pdf",
+      source: "Resume Options Modal",
+    });
+  };
+
+  const handleSocialClick = (platform: string) => {
+    trackEvent("Social Link Clicked", {
+      platform: platform,
+      source: "Contact Section",
+    });
   };
 
   return (
@@ -159,7 +210,12 @@ export default function ContactSection() {
             Get in Touch
           </motion.button>
           <motion.button
-            onClick={() => setIsResumeModalOpen(true)}
+            onClick={() => {
+              setIsResumeModalOpen(true);
+              trackEvent("Resume Modal Opened", {
+                source: "Contact Section Button",
+              });
+            }}
             className="px-8 py-3 bg-gray-800 border border-white/10 text-gray-200 rounded-lg font-medium hover:bg-gray-700 transition-all duration-300 inline-flex items-center justify-center gap-2"
             whileHover={{ scale: 1.05 }}
           >
@@ -185,6 +241,7 @@ export default function ContactSection() {
             href="https://github.com/sujeethiremath"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => handleSocialClick("GitHub")}
             className="text-gray-400 hover:text-white transition-all duration-300 transform hover:scale-110"
             aria-label="GitHub Profile"
           >
@@ -196,6 +253,7 @@ export default function ContactSection() {
             href="https://www.linkedin.com/in/sujeethiremath/"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => handleSocialClick("LinkedIn")}
             className="text-gray-400 hover:text-white transition-all duration-300 transform hover:scale-110"
             aria-label="LinkedIn Profile"
           >
@@ -207,6 +265,7 @@ export default function ContactSection() {
             href="https://twitter.com"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => handleSocialClick("Twitter")}
             className="text-gray-400 hover:text-white transition-all duration-300 transform hover:scale-110"
             aria-label="Twitter Profile"
           >
@@ -306,7 +365,7 @@ export default function ContactSection() {
             href="resume/Resume_Sujeet_H.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            onClick={closeAllModals}
+            onClick={() => handleResumeClick("View")}
             className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:opacity-90 transition-all duration-200 inline-flex items-center justify-center gap-2"
             whileHover={{ scale: 1.05 }}
           >
@@ -327,7 +386,7 @@ export default function ContactSection() {
           <motion.a
             href="resume/Resume_Sujeet_H.pdf"
             download="Sujeet_H_Resume.pdf"
-            onClick={closeAllModals}
+            onClick={() => handleResumeClick("Download")}
             className="w-full px-6 py-3 bg-gray-800 border border-white/10 text-gray-200 font-semibold rounded-full shadow-lg hover:bg-gray-700 transition-all duration-200 inline-flex items-center justify-center gap-2"
             whileHover={{ scale: 1.05 }}
           >

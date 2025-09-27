@@ -15,6 +15,7 @@ import {
 } from "react-icons/fa";
 import { RiLoginCircleLine } from "react-icons/ri";
 import { motion, AnimatePresence } from "framer-motion";
+import { trackEvent } from "../utils/analytics";
 
 interface TopNavProps {
   onLoginClick: () => void;
@@ -26,11 +27,21 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Function to track login click and pass to prop handler
+  const handleLoginAttempt = () => {
+    trackEvent("Login Button Clicked", {
+      source: isMobileMenuOpen ? "Mobile Nav" : "Desktop Nav",
+    });
+    onLoginClick();
+  };
+
   const handleLogout = async () => {
     const auth = getAuth(app);
     try {
       await signOut(auth);
       setIsDropdownOpen(false);
+      // Admin Action: Track successful sign out
+      trackEvent("Admin Signed Out", { source: "Nav Dropdown" });
     } catch (error) {
       console.error("Logout failed", error);
     }
@@ -47,16 +58,25 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
     }
   };
 
-  // New handleClick function to handle both internal and external links
+  // Centralized click handler for all navigation links (Desktop and Mobile)
   const handleClick = (
     e: React.MouseEvent,
     link: { name: string; id?: string; path?: string }
   ) => {
+    // 1. Log the event before any navigation occurs
+    trackEvent("Nav Link Clicked", {
+      link_name: link.name,
+      target_path: link.path,
+      is_scrolling: pathname === "/" && !!link.id, // Is this an anchor link on the homepage?
+      source_area: isMobileMenuOpen ? "Mobile Menu" : "Desktop Nav",
+    });
+
+    // 2. Handle scrolling for same-page links
     if (pathname === "/" && link.id) {
       e.preventDefault(); // Prevent default link behavior
       handleScroll(link.id);
     }
-    // Otherwise, let the Link component handle the navigation to another page
+    // 3. Otherwise, let the Link component handle navigation
   };
 
   const navLinks = [
@@ -72,7 +92,17 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4 md:py-6">
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link
+              href="/"
+              className="flex items-center space-x-2"
+              onClick={() =>
+                trackEvent("Nav Link Clicked", {
+                  link_name: "Logo/Home",
+                  target_path: "/",
+                  source_area: "Logo",
+                })
+              }
+            >
               <Image src="/imagewin.png" alt="Logo" width={40} height={40} />
               <span className="text-xl font-bold text-white tracking-wide">
                 Hiremath Labs
@@ -104,7 +134,13 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
               {isAuthorized ? (
                 <div className="relative">
                   <button
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    onClick={() => {
+                      setIsDropdownOpen(!isDropdownOpen);
+                      // Track dropdown open/close
+                      trackEvent("Admin Dropdown Toggled", {
+                        new_state: isDropdownOpen ? "Closed" : "Opened",
+                      });
+                    }}
                     className="flex items-center text-gray-400 hover:text-white transition-colors duration-200"
                   >
                     <FaUserCircle className="h-6 w-6" />
@@ -121,7 +157,13 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
                         <Link
                           href="/articles/write/new"
                           className="flex items-center px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
-                          onClick={() => setIsDropdownOpen(false)}
+                          onClick={(e) => {
+                            setIsDropdownOpen(false);
+                            trackEvent("Admin Action", {
+                              action_name: "Navigated to Write Article",
+                              source: "Desktop Dropdown",
+                            });
+                          }}
                         >
                           <FaFeatherAlt className="mr-2" />
                           Write Article
@@ -139,7 +181,7 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
                 </div>
               ) : (
                 <button
-                  onClick={onLoginClick}
+                  onClick={handleLoginAttempt}
                   className="flex items-center space-x-2 text-base font-medium text-gray-400 hover:text-blue-400 transition-colors duration-200"
                 >
                   <RiLoginCircleLine className="h-5 w-5" />
@@ -151,7 +193,13 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
             {/* Mobile menu button */}
             <div className="md:hidden">
               <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                onClick={() => {
+                  setIsMobileMenuOpen(!isMobileMenuOpen);
+                  // Track mobile menu state change
+                  trackEvent("Mobile Menu Toggled", {
+                    new_state: isMobileMenuOpen ? "Closed" : "Opened",
+                  });
+                }}
                 className="text-gray-400 hover:text-white transition-colors duration-200 focus:outline-none"
               >
                 {isMobileMenuOpen ? (
@@ -199,13 +247,22 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
                   <Link
                     href="/articles/write/new"
                     className="block px-5 py-2 text-base font-medium text-gray-400 hover:text-blue-400 hover:bg-gray-800 transition-colors duration-200"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      trackEvent("Admin Action", {
+                        action_name: "Navigated to Write Article",
+                        source: "Mobile Menu",
+                      });
+                    }}
                   >
                     <FaFeatherAlt className="inline-block mr-2" />
                     Write Article
                   </Link>
                   <button
-                    onClick={handleLogout}
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
                     className="block w-full text-left px-5 py-2 text-base font-medium text-gray-400 hover:text-blue-400 hover:bg-gray-800 transition-colors duration-200"
                   >
                     <FaSignOutAlt className="inline-block mr-2" />
@@ -215,7 +272,7 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
               ) : (
                 <button
                   onClick={() => {
-                    onLoginClick();
+                    handleLoginAttempt();
                     setIsMobileMenuOpen(false);
                   }}
                   className="block w-full text-left px-5 py-2 text-base font-medium text-gray-400 hover:text-blue-400 hover:bg-gray-800 transition-colors duration-200"

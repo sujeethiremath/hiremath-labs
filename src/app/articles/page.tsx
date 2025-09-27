@@ -13,6 +13,7 @@ import { app } from "../lib/firebase";
 import { useRouter } from "next/navigation";
 import { Timestamp } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
+import { trackEvent } from "../utils/analytics";
 
 interface Article {
   id: string;
@@ -69,7 +70,16 @@ const ArticleCard = ({
     </div>
     <div className="mt-6 flex flex-wrap gap-3">
       <button
-        onClick={() => onReadMore(article.id)}
+        onClick={() => {
+          onReadMore(article.id);
+          // Track when a public user clicks to read a specific article
+          trackEvent("Article Card Clicked", {
+            action: "Read More",
+            article_id: article.id,
+            article_title: article.title,
+            is_admin: isLoggedIn,
+          });
+        }}
         className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-medium hover:opacity-90 transition-all duration-300"
       >
         Read More
@@ -77,19 +87,44 @@ const ArticleCard = ({
       {isLoggedIn && (
         <>
           <button
-            onClick={() => onEdit(article.id)}
+            onClick={() => {
+              onEdit(article.id);
+              // Track admin action: Edit
+              trackEvent("Admin Action", {
+                action: "Edit Article",
+                article_id: article.id,
+                article_title: article.title,
+              });
+            }}
             className="px-6 py-2 bg-green-600 text-white rounded-full font-medium hover:bg-green-700 transition-colors duration-200"
           >
             Edit
           </button>
           <button
-            onClick={() => onDelete(article)}
+            onClick={() => {
+              onDelete(article);
+              // Track admin action: Prepare Delete
+              trackEvent("Admin Action", {
+                action: "Prepare Delete",
+                article_id: article.id,
+                article_title: article.title,
+              });
+            }}
             className="px-6 py-2 bg-red-600 text-white rounded-full font-medium hover:bg-red-700 transition-colors duration-200"
           >
             Delete
           </button>
           <button
-            onClick={() => onTogglePublic(article)}
+            onClick={() => {
+              onTogglePublic(article);
+              // Track admin action: Prepare Toggle Publish Status
+              trackEvent("Admin Action", {
+                action: "Prepare Toggle Publish Status",
+                article_id: article.id,
+                article_title: article.title,
+                current_status: article.isPublic ? "Public" : "Draft",
+              });
+            }}
             className="px-6 py-2 bg-purple-600 text-white rounded-full font-medium hover:bg-purple-700 transition-colors duration-200"
           >
             {article.isPublic ? "Hide" : "Publish"}
@@ -110,6 +145,17 @@ export default function ArticlesPage() {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isToggling, setIsToggling] = useState(false);
+
+  // Track the initial page view (non-admin)
+  useEffect(() => {
+    // Only track if not logged in (to measure general traffic)
+    if (!isLoggedIn) {
+      trackEvent("Page Viewed", {
+        page_path: "/articles",
+        page_title: "My Articles Index",
+      });
+    }
+  }, [isLoggedIn]);
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -170,6 +216,13 @@ export default function ArticlesPage() {
   const handleConfirmAction = async () => {
     if (!confirmArticle) return;
 
+    // Admin Action: Track the start of the final database operation
+    trackEvent("Admin Action", {
+      action: `Confirm ${confirmAction}`,
+      article_id: confirmArticle.id,
+      status_before: confirmArticle.isPublic ? "Public" : "Draft",
+    });
+
     try {
       const auth = getAuth(app);
       const user = auth.currentUser;
@@ -206,11 +259,29 @@ export default function ArticlesPage() {
           `Failed to ${confirmAction === "delete" ? "delete" : "update"} article.`
         );
       }
+
+      // Admin Action: Track success
+      trackEvent("Admin Action Success", {
+        action: confirmAction,
+        article_id: confirmArticle.id,
+        new_status:
+          confirmAction === "togglePublic"
+            ? !confirmArticle.isPublic
+              ? "Public"
+              : "Draft"
+            : "Deleted",
+      });
     } catch (error) {
       console.error(
         `Error ${confirmAction === "delete" ? "deleting" : "updating"} article:`,
         error
       );
+      // Admin Action: Track failure
+      trackEvent("Admin Action Failed", {
+        action: confirmAction,
+        article_id: confirmArticle?.id,
+        error: (error as Error).message,
+      });
     } finally {
       setShowConfirmModal(false);
       setConfirmAction("");
@@ -314,7 +385,15 @@ export default function ArticlesPage() {
                         : "Confirm"}
                   </button>
                   <button
-                    onClick={() => setShowConfirmModal(false)}
+                    onClick={() => {
+                      setShowConfirmModal(false);
+                      // Track when the admin cancels the modal
+                      trackEvent("Admin Action", {
+                        action: "Cancel Confirmation Modal",
+                        source: confirmAction,
+                        article_id: confirmArticle.id,
+                      });
+                    }}
                     className="px-6 py-2 bg-gray-700 text-gray-200 rounded-full font-medium hover:bg-gray-600 transition-colors duration-200"
                   >
                     Cancel
