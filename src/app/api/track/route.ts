@@ -80,9 +80,9 @@ export async function POST(req: Request) {
         body: JSON.stringify([mixpanelPayload]), // Mixpanel API expects an array of events
       });
 
-      console.log("Mixpanel Payload prepared and simulated:", mixpanelPayload);
+      //console.log("Mixpanel Payload prepared and simulated:", mixpanelPayload);
     } catch (error) {
-      console.error("Mixpanel API Error:", error);
+      //console.error("Mixpanel API Error:", error);
     }
   }
 

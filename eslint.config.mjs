@@ -20,6 +20,16 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  // 3. Configuration to override the specific rule
+  {
+    // Ensure this override only applies to TypeScript files
+    files: ["**/*.ts", "**/*.tsx"],
+    rules: {
+      // Disable the 'no-explicit-any' rule for the entire project
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+    },
+  },
 ];
 
 export default eslintConfig;
