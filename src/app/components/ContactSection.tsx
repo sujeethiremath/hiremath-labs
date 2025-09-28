@@ -181,11 +181,12 @@ export default function ContactSection() {
               className="mb-4" // Add bottom margin to separate the logo from the text
             />
             <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-600">
-              Let's Connect
+              Let&apos;s Connect
             </h2>
             <p className="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
-              I'm always open to discussing new opportunities, collaborations,
-              and engineering challenges. Feel free to reach out.
+              I&apos;m always open to discussing new opportunities,
+              collaborations, and engineering challenges. Feel free to reach
+              out.
             </p>
           </div>
         </motion.div>

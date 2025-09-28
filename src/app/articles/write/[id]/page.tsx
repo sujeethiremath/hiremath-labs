@@ -124,7 +124,7 @@ const TipTapEditorWrapper = ({
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
           className={`p-2 rounded-md ${editor.isActive("blockquote") ? "bg-blue-600 text-white" : "hover:bg-gray-700"}`}
         >
-          <span className="font-mono">"</span>
+          <span className="font-mono">&quot;</span>
         </button>
         <button
           type="button"
