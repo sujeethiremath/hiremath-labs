@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import ArticleLayout from "../../components/ArticleLayout";
 import { allArticles } from "../../lib/article";
 import ArticleAnalyticsTracker from "../../components/ArticleAnalyticsTracker";
+import Image from "next/image";
 
 export async function generateMetadata(): Promise<Metadata> {
   const article = allArticles.find(
@@ -54,16 +55,14 @@ export default function PortfolioBackendArticlePage() {
           for a truly modern experience.
         </p>
 
-        <div className="my-12">
-          <img
-            src="/Flowchart.svg"
-            alt="Portfolio Backend Architecture Flowchart"
-            className="rounded-lg shadow-2xl border border-white/10"
-          />
-          <p className="text-center text-sm text-gray-400 mt-2">
-            High-level architecture of the backend services.
-          </p>
-        </div>
+        <Image
+          src="/Flowchart.jpg"
+          alt="Portfolio Backend Architecture Flowchart"
+          className="rounded-lg shadow-2xl border border-white/10 w-full h-auto"
+          width={1200}
+          height={800}
+          sizes="100vw"
+        />
 
         <h2 className="text-3xl font-bold text-cyan-300 mt-12 mb-4">
           The Central Hub: Next.js API Router
@@ -83,13 +82,13 @@ export default function PortfolioBackendArticlePage() {
             <strong>Zero-Configuration Routing:</strong> Next.js handles the
             mapping of API file paths (e.g., /api/articles) to the downstream
             services, allowing the router to focus solely on inspecting the
-            request’s path, method (GET, POST), and then directing that request
-            to the appropriate internal service handler.
+            request&apos;s path, method (GET, POST), and then directing that
+            request to the appropriate internal service handler.
           </li>
           <li>
-            <strong>Seamless Integration:</strong> It sits between the user's
-            browser and my core business logic, providing a clean separation of
-            concerns.
+            <strong>Seamless Integration:</strong> It sits between the
+            user&apos;s browser and my core business logic, providing a clean
+            separation of concerns.
           </li>
         </ul>
 
@@ -97,9 +96,9 @@ export default function PortfolioBackendArticlePage() {
           Service 1: The Articles Service (Secure Content Management)
         </h2>
         <p className="mb-6">
-          This service is solely responsible for handling my portfolio's core
-          written content, requiring robust security measures for creation and
-          editing. For content creation (/api/articles/write), security is
+          This service is solely responsible for handling my portfolio&apos;s
+          core written content, requiring robust security measures for creation
+          and editing. For content creation (/api/articles/write), security is
           paramount. The flow is strictly controlled:
         </p>
         <ul className="list-disc list-inside space-y-2 mb-8 pl-4">
@@ -147,10 +146,10 @@ export default function PortfolioBackendArticlePage() {
         </h2>
         <p className="mb-6">
           To understand how visitors use the portfolio, any meaningful user
-          action (e.g., "article_opened," "project_clicked") triggers the
-          service. The Event Tracking Service forwards the raw event data to the
-          dedicated Analytics Platform (Mixpanel), allowing for behavioral
-          analysis and funnel tracking.
+          action (e.g., &quot;article_opened,&quot; &quot;project_clicked&quot;)
+          triggers the service. The Event Tracking Service forwards the raw
+          event data to the dedicated Analytics Platform (Mixpanel), allowing
+          for behavioral analysis and funnel tracking.
         </p>
 
         <h2 className="text-3xl font-bold text-cyan-300 mt-12 mb-4">
@@ -239,8 +238,8 @@ export default function PortfolioBackendArticlePage() {
                   (Volume-centric).
                 </TableCell>
                 <TableCell>
-                  <strong>Behavioral Insight:</strong> Mixpanel's event-driven
-                  model is better for optimizing user journeys.
+                  <strong>Behavioral Insight:</strong> Mixpanel&quot;s
+                  event-driven model is better for optimizing user journeys.
                 </TableCell>
               </tr>
               <tr>
@@ -310,8 +309,8 @@ export default function PortfolioBackendArticlePage() {
                   keys.
                 </TableCell>
                 <TableCell>
-                  <strong>Security Assurance:</strong> I trust Google's security
-                  engineers over building my own system.
+                  <strong>Security Assurance:</strong> I trust Google&quot;s
+                  security engineers over building my own system.
                 </TableCell>
               </tr>
               <tr>
@@ -337,7 +336,7 @@ export default function PortfolioBackendArticlePage() {
           API caching, anti-spam logic, and analytics, I achieved a highly
           maintainable and scalable portfolio. This architecture provides a
           robust foundation that is ready to handle growth and future feature
-          development. I'm excited to hear your thoughts on this updated
+          development. I&quot;m excited to hear your thoughts on this updated
           structure! It now better aligns with the independent roles of your
           LeetCode and Articles components.
         </p>
