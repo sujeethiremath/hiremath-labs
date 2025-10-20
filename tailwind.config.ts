@@ -1,6 +1,8 @@
+/** @type {import('tailwindcss').Config} */
 import type { Config } from "tailwindcss";
 
-export default {
+const config: Config = {
+  // We use the content array to tell Tailwind where to look for utility classes
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -8,11 +10,18 @@ export default {
   ],
   theme: {
     extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-      },
+      // Add custom theme extensions here if needed
+      // e.g., colors, fonts, spacing
     },
   },
-  plugins: [],
-} satisfies Config;
+
+  // *** CRITICAL FIX: Register the typography plugin here ***
+  // This is the correct, universal way to load plugins for utility generation.
+  plugins: [
+    // This is the package that generates the .prose styles.
+    // Ensure you have run: npm install -D @tailwindcss/typography
+    require("@tailwindcss/typography"),
+  ],
+};
+
+export default config;

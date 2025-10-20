@@ -1,8 +1,5 @@
+/* ✅ NEW: Use a single standard CSS @import for Tailwind v4 */
 @import "tailwindcss";
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* The background color and foreground text color are now handled by Tailwind classes in layout.tsx */
 :root {
