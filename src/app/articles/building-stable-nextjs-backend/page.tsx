@@ -56,7 +56,7 @@ export default function PortfolioBackendArticlePage() {
         </p>
 
         <Image
-          src="/Flowchart.jpg"
+          src="/Flowchart.svg"
           alt="Portfolio Backend Architecture Flowchart"
           className="rounded-lg shadow-2xl border border-white/10 w-full h-auto"
           width={1200}
