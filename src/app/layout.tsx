@@ -5,12 +5,12 @@ import { Metadata } from "next"; // Import the required Metadata type
 
 // Define static metadata for SEO (Site-wide defaults)
 export const metadata: Metadata = {
-  title: "Sujeet Hiremath | Software Architect & Cloud/AI Specialist",
+  title: "Sujeet Hiremath | Software Engineer & Cloud/AI Specialist",
   description:
     "Portfolio of Sujeet Hiremath, architect of mission-critical tolling, automotive, finance and healthcare platforms. 5+ years of extraordinary leadership in enterprise architecture, full-stack development (.NET, Next.js, Azure/AWS), DevOps automation and AI/ML solutions.",
   metadataBase: new URL("https://www.sujeethiremath.com"), // IMPORTANT: Replace with your actual domain
   openGraph: {
-    title: "Sujeet Hiremath | The Superman of Backend & Cloud",
+    title: "Sujeet Hiremath | Writes Code. Saves Servers. Superman.",
     description:
       "Explore Sujeet Hiremath’s portfolio showcasing mission-critical tolling, automotive, finance and healthcare systems; .NET, Next.js, Azure/AWS and AI/ML expertise.",
     url: "https://www.sujeethiremath.com", // Replace
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
         url: "/og-image.png", // Ensure you create a 1200x630 image at the root /public folder
         width: 1200,
         height: 630,
-        alt: "Sujeet Hiremath - Software Architect & Cloud/AI Specialist",
+        alt: "Sujeet Hiremath - Software Engineer & Cloud/AI Specialist",
       },
     ],
     locale: "en_US",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sujeet Hiremath | Software Architect & Cloud/AI Specialist",
+    title: "Sujeet Hiremath | Software Engineer & Cloud/AI Specialist",
     description:
       "Architecting scalable cloud-native, AI-driven and enterprise systems across tolling, automotive, finance and healthcare.",
     images: ["/og-image.png"], // Ensure you create a 1200x630 image at the root /public folder
