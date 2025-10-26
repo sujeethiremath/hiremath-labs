@@ -154,7 +154,7 @@ export default function SummarySection() {
         >
           <div className="space-y-3 w-full md:space-y-4 mb-6 md:mb-8">
             <h1 className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-teal-400">
-              Sujeet Hiremath
+              Sujeet Sharad Hiremath
             </h1>
             <h3 className="text-xl md:text-3xl font-bold text-gray-200">
               Engineer. Architect. Mentor. Innovator. Building the systems,
