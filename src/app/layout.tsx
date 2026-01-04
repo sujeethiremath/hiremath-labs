@@ -8,7 +8,12 @@ export const metadata: Metadata = {
   title: "Sujeet Hiremath | Software Engineer & Cloud/AI Specialist",
   description:
     "Portfolio of Sujeet Hiremath, architect of mission-critical tolling, automotive, finance and healthcare platforms. 5+ years of extraordinary leadership in enterprise architecture, full-stack development (.NET, Next.js, Azure/AWS), DevOps automation and AI/ML solutions.",
-  metadataBase: new URL("https://www.sujeethiremath.com"), // IMPORTANT: Replace with your actual domain
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+    metadataBase: new URL("https://www.sujeethiremath.com"), // IMPORTANT: Replace with your actual domain
   openGraph: {
     title: "Sujeet Hiremath | Writes Code. Saves Servers. Superman.",
     description:
