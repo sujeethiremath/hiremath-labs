@@ -23,7 +23,7 @@ interface SkillStat {
 
 interface LeetCodeData {
   solvedCounts: SolvedCount[];
-  allQuestionsCount: AllQuestionCount[];
+  allCounts: AllQuestionCount[];
   skillStats: SkillStat[];
 }
 
@@ -97,7 +97,7 @@ export default function LeetcodeSection() {
               { difficulty: "Medium", count: 80 },
               { difficulty: "Hard", count: 25 },
             ],
-            allQuestionsCount: [
+            allCounts: [
               { difficulty: "Easy", count: 800 },
               { difficulty: "Medium", count: 1600 },
               { difficulty: "Hard", count: 350 },
@@ -218,7 +218,7 @@ export default function LeetcodeSection() {
 
   const {
     solvedCounts = [],
-    allQuestionsCount = [],
+    allCounts = [],
     skillStats = [],
   } = data || {};
   const easySolved =
@@ -228,8 +228,14 @@ export default function LeetcodeSection() {
   const hardSolved =
     solvedCounts.find((d) => d.difficulty === "Hard")?.count || 0;
   const totalSolved = easySolved + mediumSolved + hardSolved;
-  const totalQuestions =
-    allQuestionsCount.reduce((sum, q) => sum + q.count, 0) || 0;
+  
+  const easyTotal =
+    allCounts.find((d) => d.difficulty === "Easy")?.count || 1;
+  const mediumTotal =
+    allCounts.find((d) => d.difficulty === "Medium")?.count || 1;
+  const hardTotal =
+    allCounts.find((d) => d.difficulty === "Hard")?.count || 1;
+  const totalQuestions = easyTotal + mediumTotal + hardTotal;
 
   return (
     <section id="leetcode" className="py-4 px-4 bg-gray-900 text-white">
@@ -302,17 +308,17 @@ export default function LeetcodeSection() {
               <ProgressBar
                 label="Easy"
                 solved={easySolved}
-                total={totalSolved}
+                total={easyTotal}
               />
               <ProgressBar
                 label="Medium"
                 solved={mediumSolved}
-                total={totalSolved}
+                total={mediumTotal}
               />
               <ProgressBar
                 label="Hard"
                 solved={hardSolved}
-                total={totalSolved}
+                total={hardTotal}
               />
             </div>
           </motion.div>
@@ -354,6 +360,11 @@ export default function LeetcodeSection() {
             <div className="text-6xl font-extrabold text-blue-400">
               {totalSolved}
             </div>
+            {totalQuestions > 1 && (
+              <div className="text-xs text-gray-400 mt-2 font-semibold">
+                out of {totalQuestions} total questions
+              </div>
+            )}
           </motion.div>
         </div>
       </div>
