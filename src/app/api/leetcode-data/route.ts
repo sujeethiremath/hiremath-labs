@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { getFirestore } from "firebase-admin/firestore";
-import * as firestore from "firebase-admin/firestore";
-import "../../lib/firebase-admin-init"; // Ensure Firebase Admin SDK is initialized
+import { admin, db } from "../../lib/firebase-admin-init";
 
 /**
  * Handles the GET request to fetch and cache LeetCode user data.
@@ -9,7 +7,6 @@ import "../../lib/firebase-admin-init"; // Ensure Firebase Admin SDK is initiali
  */
 export async function GET(req: Request) {
   const username = "hiremath09"; // User's LeetCode username
-  const db = getFirestore();
   const leetcodeStatsRef = db.collection("leetcode-stats").doc(username);
 
   try {
@@ -93,7 +90,7 @@ export async function GET(req: Request) {
       solvedCounts,
       allCounts,
       skillStats,
-      timestamp: firestore.Timestamp.now(),
+      timestamp: admin.firestore.Timestamp.now(),
     };
 
     // Save the new data to Firestore
