@@ -135,6 +135,7 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
     { name: "Summary", id: "summary", path: "/#summary" },
     { name: "Projects", id: "projects", path: "/#projects" },
     { name: "Leetcode", id: "leetcode", path: "/#leetcode" },
+    { name: "Github", id: "github", path: "/#github" },
     { name: "Resume Creator", path: "/resume-creator" },
     { name: "Contact", id: "contact", path: "/#contact" },
   ];

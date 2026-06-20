@@ -2,6 +2,7 @@ import SummarySection from "./components/SummarySection";
 import ProjectsSection from "./components/ProjectsSection";
 import ContactSection from "./components/ContactSection";
 import LeetcodeSection from "./components/LeetcodeSection";
+import GithubSection from "./components/GithubSection";
 import { Metadata } from "next"; // Import the required Metadata type
 
 // Specific metadata for the homepage (overrides layout.tsx defaults)
@@ -19,6 +20,7 @@ export default function Portfolio() {
         <SummarySection />
         <ProjectsSection />
         <LeetcodeSection />
+        <GithubSection />
         <ContactSection />
       </div>
     </main>
