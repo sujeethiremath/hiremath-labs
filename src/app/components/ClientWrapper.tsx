@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TopNav from "./TopNav"; // Assuming TopNav is in the same components directory
 import LoginModal from "./LoginModal"; // Assuming LoginModal is in the same components directory
 import { onAuthStateChanged } from "firebase/auth";
@@ -23,15 +23,18 @@ const ClientWrapper: React.FC<ClientWrapperProps> = ({ children }) => {
 
   // Set up the Firebase Auth State Listener once on the client side
   // This hook ensures the isAuthorized state is correct across the application
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      setIsAuthorized(true);
-      // setCurrentUser(user);
-    } else {
-      setIsAuthorized(false);
-      // setCurrentUser(null);
-    }
-  });
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthorized(true);
+        // setCurrentUser(user);
+      } else {
+        setIsAuthorized(false);
+        // setCurrentUser(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleLoginClick = () => {
     setIsLoginModalOpen(true);

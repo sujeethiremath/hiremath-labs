@@ -28,12 +28,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { initializeApp, getApps } from "firebase/app";
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "placeholder-api-key",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "placeholder-auth-domain",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "placeholder-project-id",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "placeholder-storage-bucket",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "placeholder-messaging-sender-id",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "placeholder-app-id",
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
@@ -119,6 +119,12 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
       source_area: isMobileMenuOpen ? "Mobile Menu" : "Desktop Nav",
     });
 
+    if (link.path === "/resume-creator" && !isAuthorized) {
+      e.preventDefault();
+      onLoginClick();
+      return;
+    }
+
     if (pathname === "/" && link.id) {
       e.preventDefault();
       handleScroll(link.id);
@@ -129,8 +135,7 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
     { name: "Summary", id: "summary", path: "/#summary" },
     { name: "Projects", id: "projects", path: "/#projects" },
     { name: "Leetcode", id: "leetcode", path: "/#leetcode" },
-    { name: "Habits", path: "/habit-tracker" }, 
-    { name: "Articles", path: "/articles" },
+    { name: "Resume Creator", path: "/resume-creator" },
     { name: "Contact", id: "contact", path: "/#contact" },
   ];
 

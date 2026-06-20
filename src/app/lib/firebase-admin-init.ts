@@ -1,4 +1,6 @@
 import * as admin from "firebase-admin";
+import fs from "fs";
+import path from "path";
 
 if (!admin.apps.length) {
   try {
@@ -28,11 +30,27 @@ if (!admin.apps.length) {
     } else {
       // ---
       // LOCAL / DEVELOPMENT LOGIC
-      // The env var is a file path (or default)
+      // Check if a local serviceAccount.json exists in the project root
       // ---
-      admin.initializeApp({
-        credential: admin.credential.applicationDefault(),
-      });
+      const localKeyPath = path.resolve(/*turbopackIgnore: true*/ process.cwd(), "serviceAccount.json");
+      const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID;
+
+      if (fs.existsSync(localKeyPath)) {
+        admin.initializeApp({
+          credential: admin.credential.cert(localKeyPath),
+          projectId: projectId || undefined,
+        });
+      } else if (credentialString && fs.existsSync(path.resolve(/*turbopackIgnore: true*/ process.cwd(), credentialString))) {
+        admin.initializeApp({
+          credential: admin.credential.cert(path.resolve(/*turbopackIgnore: true*/ process.cwd(), credentialString)),
+          projectId: projectId || undefined,
+        });
+      } else {
+        admin.initializeApp({
+          credential: admin.credential.applicationDefault(),
+          projectId: projectId || undefined,
+        });
+      }
     }
   } catch (error) {
     console.error("Firebase Admin Initialization Error:", error);
