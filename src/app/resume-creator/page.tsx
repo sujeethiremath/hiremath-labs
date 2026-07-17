@@ -19,7 +19,7 @@ export default function ResumeCreator() {
   const [title, setTitle] = useState("");
   const [company, setCompany] = useState("");
   const [description, setDescription] = useState("");
-  const [provider, setProvider] = useState<"gemini" | "grok">("gemini");
+  const [provider, setProvider] = useState<"gemini" | "grok" | "claude">("gemini");
 
   // Execution State
   const [generating, setGenerating] = useState(false);
@@ -268,7 +268,8 @@ export default function ResumeCreator() {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">AI Model Provider</label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-3">
+                {/* Gemini */}
                 <button
                   type="button"
                   onClick={() => setProvider("gemini")}
@@ -279,8 +280,10 @@ export default function ResumeCreator() {
                   }`}
                 >
                   <span>Gemini 2.5 Flash</span>
-                  <span className="text-[10px] font-medium opacity-70 mt-0.5">Free API Tier</span>
+                  <span className="text-[10px] font-medium opacity-70 mt-0.5">Google AI</span>
                 </button>
+
+                {/* Grok */}
                 <button
                   type="button"
                   onClick={() => setProvider("grok")}
@@ -291,9 +294,28 @@ export default function ResumeCreator() {
                   }`}
                 >
                   <span>Grok 4</span>
-                  <span className="text-[10px] font-medium opacity-70 mt-0.5">Requires xAI API Key</span>
+                  <span className="text-[10px] font-medium opacity-70 mt-0.5">xAI</span>
+                </button>
+
+                {/* Claude — ready, add ANTHROPIC_API_KEY to enable */}
+                <button
+                  type="button"
+                  onClick={() => setProvider("claude")}
+                  className={`py-3.5 rounded-2xl border text-sm font-bold transition-all flex flex-col items-center justify-center ${
+                    provider === "claude"
+                      ? "bg-orange-600/10 border-orange-500 text-orange-400"
+                      : "bg-white/5 border-white/5 text-gray-400 hover:bg-white/10"
+                  }`}
+                >
+                  <span>Claude Opus 4.5</span>
+                  <span className="text-[10px] font-medium opacity-70 mt-0.5">Anthropic · Best</span>
                 </button>
               </div>
+              {provider === "claude" && (
+                <p className="mt-2 text-[11px] text-orange-400/80 flex items-center gap-1.5">
+                  <span>⚡</span> Make sure <code className="bg-white/5 px-1 py-0.5 rounded text-orange-300">ANTHROPIC_API_KEY</code> is set in the server <code className="bg-white/5 px-1 py-0.5 rounded text-orange-300">.env</code> to activate.
+                </p>
+              )}
             </div>
 
             <div>
