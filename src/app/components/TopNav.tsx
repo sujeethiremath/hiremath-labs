@@ -20,7 +20,9 @@ import {
   Menu, 
   X, 
   LogIn, 
-  Target 
+  Target,
+  Activity,
+  Camera
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -197,14 +199,30 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
                   >
                     <UserCircle size={24} />
                   </button>
-                  <AnimatePresence>
+                    <AnimatePresence>
                     {isDropdownOpen && (
                       <motion.div
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute right-0 mt-3 w-52 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl py-2 overflow-hidden"
+                        className="absolute right-0 mt-3 w-56 bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-2 overflow-hidden z-50"
                       >
+                        <Link
+                          href="/server-dashboard"
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="flex items-center w-full px-4 py-3 text-xs font-bold text-gray-300 hover:text-cyan-400 hover:bg-white/5 transition-colors uppercase tracking-wider"
+                        >
+                          <Activity size={16} className="mr-3 text-cyan-400" />
+                          Server Dashboard
+                        </Link>
+                        <Link
+                          href="/camera"
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="flex items-center w-full px-4 py-3 text-xs font-bold text-gray-300 hover:text-emerald-400 hover:bg-white/5 transition-colors uppercase tracking-wider"
+                        >
+                          <Camera size={16} className="mr-3 text-emerald-400" />
+                          Live Camera
+                        </Link>
                         <div className="h-px bg-white/5 mx-2 my-1" />
                         <button
                           onClick={handleLogout}
@@ -268,6 +286,38 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
                   {link.name}
                 </Link>
               ))}
+
+              {isAuthorized && (
+                <>
+                  <div className="h-px bg-white/10 my-2" />
+                  <Link
+                    href="/server-dashboard"
+                    className="flex items-center px-5 py-4 rounded-xl text-sm font-black uppercase tracking-widest text-cyan-400 hover:bg-cyan-500/10 transition-all"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Activity size={18} className="mr-3 text-cyan-400" />
+                    Server Dashboard
+                  </Link>
+                  <Link
+                    href="/camera"
+                    className="flex items-center px-5 py-4 rounded-xl text-sm font-black uppercase tracking-widest text-emerald-400 hover:bg-emerald-500/10 transition-all"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Camera size={18} className="mr-3 text-emerald-400" />
+                    Live Camera
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center w-full px-5 py-4 rounded-xl text-sm font-black uppercase tracking-widest text-rose-400 hover:bg-rose-500/10 transition-all"
+                  >
+                    <LogOut size={18} className="mr-3" />
+                    Sign Out
+                  </button>
+                </>
+              )}
             </div>
           </motion.div>
         )}
