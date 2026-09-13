@@ -15,7 +15,11 @@ import {
   Activity, 
   ShieldCheck, 
   AlertCircle,
-  Radio
+  Radio,
+  Volume2,
+  VolumeX,
+  Mic,
+  MicOff
 } from "lucide-react";
 import LoginModal from "../components/LoginModal";
 import Link from "next/link";
@@ -31,6 +35,7 @@ export default function CameraPage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [token, setToken] = useState<string | null>(null);
 
+  // Video Stream State
   const [streamError, setStreamError] = useState(false);
   const [streamLoading, setStreamLoading] = useState(true);
   const [streamKey, setStreamKey] = useState(0);
@@ -38,8 +43,15 @@ export default function CameraPage() {
   const [snapshotSuccess, setSnapshotSuccess] = useState(false);
   const [liveClock, setLiveClock] = useState("00:00:00");
 
+  // Audio Stream State
+  const [isAudioActive, setIsAudioActive] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [volume, setVolume] = useState(0.8);
+  const [audioConnecting, setAudioConnecting] = useState(false);
+
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Auth Listener
   useEffect(() => {
@@ -69,7 +81,7 @@ export default function CameraPage() {
     return () => clearInterval(timer);
   }, []);
 
-  // Listen for fullscreen change events
+  // Fullscreen change listener
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
@@ -77,6 +89,38 @@ export default function CameraPage() {
     document.addEventListener("fullscreenchange", handleFullscreenChange);
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, []);
+
+  // Sync volume with audio element
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = isMuted ? 0 : volume;
+    }
+  }, [volume, isMuted]);
+
+  // Audio toggle handler
+  const toggleAudio = async () => {
+    if (!audioRef.current || !token) return;
+
+    if (!isAudioActive) {
+      try {
+        setAudioConnecting(true);
+        const freshToken = await user?.getIdToken(true);
+        const activeToken = freshToken || token;
+        audioRef.current.src = `/api/stratus/audio?token=${encodeURIComponent(activeToken)}&k=${Date.now()}`;
+        audioRef.current.volume = isMuted ? 0 : volume;
+        await audioRef.current.play();
+        setIsAudioActive(true);
+      } catch (err) {
+        console.error("Audio playback error:", err);
+      } finally {
+        setAudioConnecting(false);
+      }
+    } else {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+      setIsAudioActive(false);
+    }
+  };
 
   // Reconnect / Refresh stream
   const handleRefresh = async () => {
@@ -86,6 +130,13 @@ export default function CameraPage() {
       try {
         const freshToken = await user.getIdToken(true);
         setToken(freshToken);
+
+        // If audio is playing, reconnect audio as well
+        if (isAudioActive && audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.src = `/api/stratus/audio?token=${encodeURIComponent(freshToken)}&k=${Date.now()}`;
+          audioRef.current.play().catch(console.error);
+        }
       } catch (e) {
         console.error("Failed refreshing token:", e);
       }
@@ -163,7 +214,7 @@ export default function CameraPage() {
           <p className="text-gray-400 text-sm mb-8 leading-relaxed">
             {user
               ? `Account (${user.email}) is not authorized to view the live camera feed.`
-              : "The Stratus Live Camera feed is private hardware surveillance. Please log in with your administrator account to stream."}
+              : "The Stratus Live Camera & Audio feed is private hardware surveillance. Please log in with your administrator account to stream."}
           </p>
           <div className="flex flex-col gap-3">
             {!user ? (
@@ -192,6 +243,9 @@ export default function CameraPage() {
 
   return (
     <div className="min-h-screen bg-[#07090e] text-white font-sans selection:bg-emerald-500/30">
+      {/* Hidden Live Audio Stream Element */}
+      <audio ref={audioRef} preload="none" />
+
       {/* Top Header */}
       <header className="border-b border-[#141d2c] bg-[#0a0e17]/80 backdrop-blur-md sticky top-0 z-40 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -208,10 +262,10 @@ export default function CameraPage() {
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/50" />
               <div>
                 <h1 className="text-sm font-bold tracking-wider uppercase text-gray-200">
-                  Stratus Live Camera
+                  Stratus Live Camera & Audio
                 </h1>
                 <p className="text-[11px] font-mono text-emerald-400/80">
-                  RPi 5 CSI-2 • OV5647 5MP Sensor
+                  RPi 5 CSI-2 • OV5647 5MP + USB PnP Mic
                 </p>
               </div>
             </div>
@@ -244,11 +298,70 @@ export default function CameraPage() {
                 LIVE STREAM
               </span>
               <span className="text-xs text-gray-400 font-mono hidden sm:inline">
-                MJPEG 640x480 @ 15 FPS
+                MJPEG 640x480 &bull; 44.1kHz MP3
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
+            {/* Stream & Audio Controls */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Audio Controls */}
+              <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1 gap-1">
+                <button
+                  onClick={toggleAudio}
+                  disabled={audioConnecting}
+                  className={`px-3 py-1 rounded-lg text-xs font-mono flex items-center gap-2 transition-all ${
+                    isAudioActive
+                      ? "bg-emerald-500 text-black font-bold shadow-md shadow-emerald-500/20"
+                      : "text-gray-300 hover:text-white hover:bg-white/5"
+                  }`}
+                  title={isAudioActive ? "Stop live audio" : "Start live audio"}
+                >
+                  {isAudioActive ? (
+                    <>
+                      <Mic size={14} />
+                      <span>Audio ON</span>
+                      {/* Animated Audio Equalizer Bars */}
+                      <span className="flex items-end gap-0.5 h-3 ml-0.5">
+                        <span className="w-0.5 bg-black h-2 animate-bounce" style={{ animationDuration: '400ms' }} />
+                        <span className="w-0.5 bg-black h-3 animate-bounce" style={{ animationDuration: '600ms' }} />
+                        <span className="w-0.5 bg-black h-1.5 animate-bounce" style={{ animationDuration: '500ms' }} />
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <MicOff size={14} />
+                      <span>{audioConnecting ? "Connecting..." : "Audio OFF"}</span>
+                    </>
+                  )}
+                </button>
+
+                {isAudioActive && (
+                  <>
+                    <button
+                      onClick={() => setIsMuted(!isMuted)}
+                      className="p-1 rounded-md text-gray-400 hover:text-white transition-colors"
+                      title={isMuted ? "Unmute" : "Mute"}
+                    >
+                      {isMuted ? <VolumeX size={14} className="text-rose-400" /> : <Volume2 size={14} className="text-emerald-400" />}
+                    </button>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      value={isMuted ? 0 : volume}
+                      onChange={(e) => {
+                        setVolume(parseFloat(e.target.value));
+                        if (isMuted) setIsMuted(false);
+                      }}
+                      className="w-16 h-1 accent-emerald-400 cursor-pointer hidden sm:inline-block"
+                      title={`Volume: ${Math.round((isMuted ? 0 : volume) * 100)}%`}
+                    />
+                  </>
+                )}
+              </div>
+
+              {/* Snapshot Button */}
               <button
                 onClick={captureSnapshot}
                 disabled={streamError || streamLoading}
@@ -258,14 +371,18 @@ export default function CameraPage() {
                 <Download size={14} />
                 <span className="hidden sm:inline">Snapshot</span>
               </button>
+
+              {/* Reconnect Button */}
               <button
                 onClick={handleRefresh}
                 className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white text-xs font-mono flex items-center gap-2 transition-all"
-                title="Reconnect stream"
+                title="Reconnect video & audio"
               >
                 <RefreshCw size={14} className={streamLoading ? "animate-spin" : ""} />
                 <span className="hidden sm:inline">Reconnect</span>
               </button>
+
+              {/* Fullscreen Button */}
               <button
                 onClick={toggleFullscreen}
                 className="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white text-xs transition-all"
@@ -345,6 +462,10 @@ export default function CameraPage() {
                 <span>STRATUS-CAM-01</span>
                 <span className="text-gray-400">|</span>
                 <span className="text-gray-300">{liveClock}</span>
+                <span className="text-gray-400">|</span>
+                <span className={isAudioActive ? "text-emerald-400 flex items-center gap-1" : "text-gray-500"}>
+                  {isAudioActive ? "MIC LIVE" : "MIC MUTED"}
+                </span>
               </div>
               <div className="bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-white/10 text-gray-400 hidden sm:block">
                 AUTHENTICATED ADMIN
@@ -353,11 +474,20 @@ export default function CameraPage() {
           </div>
 
           {/* Stream Footer Telemetry Info */}
-          <div className="p-6 bg-[#090d16] border-t border-[#141d2c] grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+          <div className="p-6 bg-[#090d16] border-t border-[#141d2c] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-mono text-xs">
             <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5">
               <div className="text-gray-500 uppercase text-[10px] tracking-wider mb-1">Hardware Sensor</div>
               <div className="text-gray-200 font-bold">OmniVision OV5647</div>
-              <div className="text-gray-400 text-[11px] mt-0.5">5 Megapixel Native CSI-2</div>
+              <div className="text-gray-400 text-[11px] mt-0.5">5MP Native CSI-2 Port</div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+              <div className="text-gray-500 uppercase text-[10px] tracking-wider mb-1">Audio Hardware</div>
+              <div className="text-emerald-400 font-bold flex items-center gap-1.5">
+                <Mic size={14} />
+                USB PnP Microphone
+              </div>
+              <div className="text-gray-400 text-[11px] mt-0.5">ALSA Asym Default • 44.1kHz MP3</div>
             </div>
 
             <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5">
