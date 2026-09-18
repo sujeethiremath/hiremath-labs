@@ -22,7 +22,8 @@ import {
   LogIn, 
   Target,
   Activity,
-  Camera
+  Camera,
+  Terminal
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -223,6 +224,14 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
                           <Camera size={16} className="mr-3 text-emerald-400" />
                           Live Camera
                         </Link>
+                        <Link
+                          href="/terminal"
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="flex items-center w-full px-4 py-3 text-xs font-bold text-gray-300 hover:text-cyan-400 hover:bg-white/5 transition-colors uppercase tracking-wider"
+                        >
+                          <Terminal size={16} className="mr-3 text-cyan-400" />
+                          Remote Terminal
+                        </Link>
                         <div className="h-px bg-white/5 mx-2 my-1" />
                         <button
                           onClick={handleLogout}
@@ -305,6 +314,14 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
                   >
                     <Camera size={18} className="mr-3 text-emerald-400" />
                     Live Camera
+                  </Link>
+                  <Link
+                    href="/terminal"
+                    className="flex items-center px-5 py-4 rounded-xl text-sm font-black uppercase tracking-widest text-cyan-400 hover:bg-cyan-500/10 transition-all"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Terminal size={18} className="mr-3 text-cyan-400" />
+                    Remote Terminal
                   </Link>
                   <button
                     onClick={() => {
