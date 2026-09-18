@@ -151,13 +151,16 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
             <Link
               href="/"
               className="flex items-center space-x-3 group"
-              onClick={() =>
+              onClick={() => {
                 trackEvent("Nav Link Clicked", {
                   link_name: "Logo/Home",
                   target_path: "/",
                   source_area: "Logo",
-                })
-              }
+                });
+                if (pathname === "/") {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }}
             >
               <Image src="/imagewin.png" alt="Logo" width={40} height={40} />
               <span className="text-xl font-bold text-white tracking-wide">
@@ -258,6 +261,7 @@ const TopNav: React.FC<TopNavProps> = ({ onLoginClick, isAuthorized }) => {
             {/* Mobile Toggle */}
             <div className="md:hidden">
               <button
+                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 text-gray-400 hover:text-white transition-all"
               >

@@ -10,7 +10,7 @@ const AUTHORIZED_EMAILS = [
 ];
 
 const STRATUS_TERMINAL_SECRET =
-  process.env.STRATUS_TERMINAL_SECRET || "stratus-remote-terminal-secret-2026";
+  process.env.STRATUS_TERMINAL_SECRET || (process.env.NODE_ENV === "test" ? "test-stratus-terminal-secret-for-ci" : "");
 
 export async function POST(req: NextRequest) {
   try {
@@ -48,6 +48,13 @@ export async function POST(req: NextRequest) {
       iat: Math.floor(Date.now() / 1000),
       exp: Math.floor(Date.now() / 1000) + 60, // 60-second expiry
     };
+
+    if (!STRATUS_TERMINAL_SECRET) {
+      return NextResponse.json(
+        { error: "Server Configuration Error: Terminal secret is not configured" },
+        { status: 500 }
+      );
+    }
 
     const ticket = jwt.sign(payload, STRATUS_TERMINAL_SECRET, { algorithm: "HS256" });
 

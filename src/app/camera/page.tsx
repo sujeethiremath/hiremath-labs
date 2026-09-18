@@ -421,7 +421,7 @@ export default function CameraPage() {
                 </div>
                 <h3 className="text-lg font-bold text-gray-200 mb-2 font-mono">Stream Connection Offline</h3>
                 <p className="text-xs text-gray-400 max-w-md mb-6 leading-relaxed">
-                  The Stratus camera service on 10.0.0.168:8000 or the Cloudflare Tunnel ingress is currently not receiving frames from the CSI-2 sensor.
+                  The Stratus camera service or the Cloudflare Tunnel ingress is currently not receiving frames from the CSI-2 sensor.
                 </p>
                 <button
                   onClick={handleRefresh}

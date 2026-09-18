@@ -351,7 +351,7 @@ export default function ServerDashboard() {
               </span>
             </div>
             <div className="my-1">
-              <div className="text-lg font-bold text-white tracking-wide">{metrics?.network.ip || "10.0.0.168"}</div>
+              <div className="text-lg font-bold text-white tracking-wide">{metrics?.network.ip || "Connected LAN"}</div>
               <span className="text-[9px] text-gray-500">GIGABIT LAN</span>
             </div>
             <div className="grid grid-cols-2 gap-2 text-[10px] pt-2 border-t border-white/5">
