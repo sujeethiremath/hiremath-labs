@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import LoginModal from "../components/LoginModal";
 import Link from "next/link";
+import CameraAIControlCard from "../components/CameraAIControlCard";
 
 const AUTHORIZED_EMAILS = [
   "sujeetshiremath@gmail.com",
@@ -287,7 +288,7 @@ export default function CameraPage() {
       </header>
 
       {/* Main Container */}
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-4 py-8 flex flex-col gap-8">
         {/* Stream Viewport Card */}
         <div className="bg-[#0b101b] border border-[#182338] rounded-3xl overflow-hidden shadow-2xl">
           {/* Stream Top Toolbar */}
@@ -509,6 +510,9 @@ export default function CameraPage() {
             </div>
           </div>
         </div>
+
+        {/* AI Camera Intelligence & Push Notifications Control */}
+        <CameraAIControlCard token={token} />
       </main>
     </div>
   );
