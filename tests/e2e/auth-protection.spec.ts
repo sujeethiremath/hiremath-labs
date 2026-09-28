@@ -46,4 +46,20 @@ test.describe("Authentication Protection & Private Routes Suite", () => {
     const response = await request.get("/api/stratus/audio");
     expect(response.status()).toBe(401);
   });
+
+  test("unauthenticated camera AI status API request returns 401 Unauthorized", async ({ request }) => {
+    const response = await request.get("/api/stratus/camera-ai/status");
+    expect(response.status()).toBe(401);
+    const body = await response.json();
+    expect(body.error).toContain("Unauthorized");
+  });
+
+  test("unauthenticated camera AI control API request returns 401 Unauthorized", async ({ request }) => {
+    const response = await request.post("/api/stratus/camera-ai/control", {
+      data: { action: "start" },
+    });
+    expect(response.status()).toBe(401);
+    const body = await response.json();
+    expect(body.error).toContain("Unauthorized");
+  });
 });
